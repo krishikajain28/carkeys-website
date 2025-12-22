@@ -3,6 +3,12 @@ import { ChevronRight, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
+  const scrollToProducts = () => {
+    const section = document.getElementById("product-pillars");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
     // Background Image with Dark Overlay
     <section className="relative w-full py-32 bg-slate-900 overflow-hidden">
@@ -27,9 +33,9 @@ const Hero = () => {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight leading-tight">
-          Secure Your Business with <br />
+          Wholesale Key Machines <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-200">
-            Premium Hardware.
+            & Remotes{" "}
           </span>
         </h1>
 
@@ -39,11 +45,12 @@ const Hero = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link to="/blank-keys">
-            <button className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/50 flex items-center justify-center gap-2">
-              View Catalog <ChevronRight size={20} />
-            </button>
-          </Link>
+          <button
+            onClick={scrollToProducts}
+            className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/50 flex items-center justify-center gap-2"
+          >
+            View Products <ChevronRight size={20} />
+          </button>
 
           <Link to="/contact">
             <button className="w-full sm:w-auto bg-transparent border-2 border-white/20 text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide hover:bg-white/10 transition-all">

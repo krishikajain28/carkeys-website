@@ -28,7 +28,7 @@ const Header = () => {
             Home
           </Link>
           <Link to="/about" className="hover:text-white transition-colors">
-            About Firm
+            About Us
           </Link>
           <Link to="/blank-keys" className="hover:text-white transition-colors">
             Products

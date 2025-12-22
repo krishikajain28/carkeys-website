@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion"; // IMPORT ANIMATION LIBRARY
 import {
   ArrowRight,
   ArrowLeft,
@@ -14,14 +15,17 @@ import {
   ChevronLeft,
 } from "lucide-react";
 
-// --- HELPER: Generate the array for kc1.png to kc10.png ---
-// This assumes your files are in public/images/kc1.png, public/images/kc2.png, etc.
-const keyCuttingImages = Array.from(
-  { length: 10 },
-  (_, i) => `/images/kc${i + 1}.png`
-);
+// --- 1. HELPER: DYNAMIC IMAGE GENERATOR ---
+// Since you have the images, this works perfectly now.
+// Ensure your images are in public/images/ folder named kc1.png, kc2.png...
+const generateImageArray = (prefix, count) =>
+  Array.from({ length: count }, (_, i) => `/images/${prefix}${i + 1}.png`);
 
-// --- DATA CONSTANTS ---
+const KC_IMAGES = generateImageArray("kc", 10);
+const KP_IMAGES = generateImageArray("kp", 10);
+const BK_IMAGES = generateImageArray("bk", 10);
+
+// --- 2. DATA CONSTANTS ---
 const PRODUCT_DATA = [
   {
     id: "cutting",
@@ -31,8 +35,7 @@ const PRODUCT_DATA = [
       "From heavy-duty manual duplicators to advanced automatic CNC cutters. We stock machines that are easy to use, calibrate, and built to last for years.",
     icon: Cog,
     color: "blue",
-    // NOW AN ARRAY OF IMAGES
-    images: keyCuttingImages,
+    images: KC_IMAGES,
     stats: [
       { label: "Stock Status", value: "20+ Models Ready" },
       { label: "Operation", value: "Manual & Automatic" },
@@ -68,10 +71,7 @@ const PRODUCT_DATA = [
       "Modern tablets and software to program sensor keys. Simple plug-and-play interfaces suitable for technicians with basic knowledge.",
     icon: Cpu,
     color: "indigo",
-    // Single image in an array
-    images: [
-      "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1000&auto=format&fit=crop",
-    ],
+    images: KP_IMAGES,
     stats: [
       { label: "Inventory", value: "10+ Variants" },
       { label: "Updates", value: "Lifetime Free via WiFi" },
@@ -107,10 +107,7 @@ const PRODUCT_DATA = [
       "The raw material for your business. We hold the largest wholesale catalog of key shells, flip keys, and smart remotes. Order in bulk for the best margins.",
     icon: Key,
     color: "emerald",
-    // Single image in an array
-    images: [
-      "https://images.unsplash.com/photo-1622435804770-38448eb5c6b6?q=80&w=1000&auto=format&fit=crop",
-    ],
+    images: BK_IMAGES,
     stats: [
       { label: "Catalog Size", value: "500+ Varieties" },
       { label: "Quality", value: "OEM Grade Plastic" },
@@ -125,14 +122,14 @@ const PRODUCT_DATA = [
     ],
     buttons: [
       {
-        label: "View Gallery Page",
+        label: "View Keys",
         link: "/blank-keys",
         type: "link",
         icon: LayoutGrid,
         variant: "primary",
       },
       {
-        label: "Download PDF",
+        label: "Download Brochure",
         link: "/assets/catalog.pdf",
         type: "download",
         icon: Download,
@@ -142,7 +139,7 @@ const PRODUCT_DATA = [
   },
 ];
 
-// --- SUB-COMPONENTS ---
+// --- 3. SUB-COMPONENTS ---
 
 const SpecBadge = ({ label, value }) => (
   <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg flex flex-col justify-center text-center hover:bg-white hover:shadow-sm transition-all">
@@ -161,12 +158,11 @@ const CompatibilityTag = ({ text }) => (
   </span>
 );
 
-// --- NEW: PRODUCT CARD COMPONENT (Handles Slider State Internally) ---
+// --- 4. PRODUCT CARD COMPONENT (With Animation Wrapper) ---
 const ProductCard = ({ product, isReversed }) => {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const Icon = product.icon;
 
-  // Theme Colors
   const colorStyles = {
     blue: "bg-blue-600 shadow-blue-200 text-blue-600",
     indigo: "bg-indigo-600 shadow-indigo-200 text-indigo-600",
@@ -175,7 +171,6 @@ const ProductCard = ({ product, isReversed }) => {
   const themeColor = colorStyles[product.color];
   const bgColor = themeColor.split(" ")[0];
 
-  // Slider Logic
   const nextImage = () => {
     setCurrentImgIndex((prev) => (prev + 1) % product.images.length);
   };
@@ -189,7 +184,12 @@ const ProductCard = ({ product, isReversed }) => {
   const hasMultipleImages = product.images.length > 1;
 
   return (
-    <div
+    // ANIMATION WRAPPER: This makes the section Fade Up as you scroll
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }} // Triggers when 100px into view, only once
+      transition={{ duration: 0.8, ease: "easeOut" }} // Smooth, slow ease
       className={`flex flex-col ${
         isReversed ? "lg:flex-row-reverse" : "lg:flex-row"
       } gap-12 lg:gap-20 items-start`}
@@ -197,45 +197,46 @@ const ProductCard = ({ product, isReversed }) => {
       {/* IMAGE / SLIDER SECTION */}
       <div className="w-full lg:w-1/2">
         <div className="relative group select-none">
-          {/* Background Glow */}
           <div
             className={`absolute -inset-4 rounded-2xl opacity-20 blur-xl transition duration-500 group-hover:opacity-30 ${bgColor}`}
           ></div>
 
           <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-200 shadow-2xl bg-slate-100">
-            {/* The Image */}
             <img
               src={product.images[currentImgIndex]}
               alt={`${product.title} view ${currentImgIndex + 1}`}
               className="w-full h-full object-cover transform transition-transform duration-500"
+              // Fallback if image fails to load
+              onError={(e) => {
+                e.target.src =
+                  "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?auto=format&fit=crop&w=800";
+              }}
             />
 
-            {/* SLIDER CONTROLS (Only if multiple images) */}
             {hasMultipleImages && (
               <>
-                {/* Left Arrow */}
                 <button
                   onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-lg hover:bg-white text-slate-800 transition-all z-10"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-md p-3 rounded-full shadow-lg hover:bg-white text-slate-900 transition-all z-20 hover:scale-110"
                 >
                   <ChevronLeft size={24} />
                 </button>
 
-                {/* Right Arrow */}
                 <button
                   onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-lg hover:bg-white text-slate-800 transition-all z-10"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-md p-3 rounded-full shadow-lg hover:bg-white text-slate-900 transition-all z-20 hover:scale-110"
                 >
                   <ChevronRight size={24} />
                 </button>
 
-                {/* Dots Indicator at Bottom */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-20">
                   {product.images.map((_, idx) => (
                     <div
                       key={idx}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        idx === currentImgIndex ? "bg-white w-4" : "bg-white/50"
+                      className={`h-1.5 rounded-full transition-all shadow-sm ${
+                        idx === currentImgIndex
+                          ? `w-6 ${bgColor}`
+                          : "w-2 bg-white/60"
                       }`}
                     />
                   ))}
@@ -243,24 +244,26 @@ const ProductCard = ({ product, isReversed }) => {
               </>
             )}
 
-            {/* Floating Info Card (Hide if slider controls are active to avoid clutter, or keep it) */}
-            {!hasMultipleImages && (
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full text-white ${bgColor}`}>
-                    <Icon size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">
-                      Category
-                    </p>
-                    <p className="text-sm font-black text-slate-900">
-                      {product.title}
-                    </p>
-                  </div>
+            <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-slate-100 flex items-center justify-between z-10">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-full text-white ${bgColor}`}>
+                  <Icon size={20} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase">
+                    Category
+                  </p>
+                  <p className="text-sm font-black text-slate-900">
+                    {product.title}
+                  </p>
                 </div>
               </div>
-            )}
+              {hasMultipleImages && (
+                <div className="bg-slate-100 px-3 py-1 rounded-md text-xs font-bold text-slate-500">
+                  {currentImgIndex + 1} / {product.images.length}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -313,11 +316,9 @@ const ProductCard = ({ product, isReversed }) => {
           ))}
         </ul>
 
-        {/* DYNAMIC BUTTONS AREA */}
         <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
           {product.buttons.map((btn, btnIdx) => {
             const ButtonIcon = btn.icon;
-
             const baseClasses =
               "flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold transition-all transform hover:-translate-y-1 shadow-lg";
             const primaryClasses = `${bgColor} text-white hover:shadow-xl`;
@@ -344,15 +345,20 @@ const ProductCard = ({ product, isReversed }) => {
           })}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 // --- MAIN PAGE COMPONENT ---
 const ProductPillars = () => {
   return (
-    <section className="bg-white py-20 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto space-y-24">
+    <section
+      className="bg-white py-20 px-4 md:px-8 overflow-hidden"
+      id="product-pillars"
+    >
+      <div className="max-w-7xl mx-auto space-y-32">
+        {" "}
+        {/* Increased vertical spacing for better scroll feel */}
         {PRODUCT_DATA.map((product, index) => (
           <ProductCard
             key={product.id}
