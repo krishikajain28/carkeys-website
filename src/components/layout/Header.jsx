@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Phone, Menu, X, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,12 +30,7 @@ const Header = () => {
   return (
     <>
       {/* HEADER BAR */}
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10 shadow-2xl"
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10 shadow-2xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           {/* 1. LOGO */}
           <Link to="/" className="flex items-center gap-3 group relative z-50">
@@ -62,7 +56,7 @@ const Header = () => {
                 className="relative text-sm font-bold text-slate-300 uppercase tracking-wide hover:text-white transition-colors group"
               >
                 {link.name}
-                {/* Animated Underline */}
+                {/* Simple Underline (CSS Transition only) */}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
@@ -87,56 +81,38 @@ const Header = () => {
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
-      </motion.header>
+      </header>
 
-      {/* MOBILE MENU OVERLAY (AnimatePresence allows exit animations) */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "tween", duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-slate-950 md:hidden flex flex-col pt-32 px-8"
-          >
-            <nav className="flex flex-col gap-6">
-              {navLinks.map((link, idx) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + idx * 0.1 }} // Stagger effect
-                    className="flex items-center justify-between py-4 border-b border-white/10 group"
-                  >
-                    <span className="text-2xl font-black text-white uppercase tracking-tight group-hover:text-blue-500 transition-colors">
-                      {link.name}
-                    </span>
-                    <ChevronRight className="text-slate-600 group-hover:text-blue-500" />
-                  </motion.div>
-                </Link>
-              ))}
-            </nav>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-12"
-            >
-              <a
-                href="tel:+919876543210"
-                className="flex w-full items-center justify-center gap-3 bg-blue-600 text-white py-5 rounded-xl font-bold text-sm uppercase tracking-widest shadow-xl"
+      {/* MOBILE MENU OVERLAY (Static Conditional Rendering) */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-slate-950 md:hidden flex flex-col pt-32 px-8">
+          <nav className="flex flex-col gap-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Phone size={18} /> Call Now
-              </a>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div className="flex items-center justify-between py-4 border-b border-white/10 group">
+                  <span className="text-2xl font-black text-white uppercase tracking-tight group-hover:text-blue-500 transition-colors">
+                    {link.name}
+                  </span>
+                  <ChevronRight className="text-slate-600 group-hover:text-blue-500" />
+                </div>
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mt-12">
+            <a
+              href="tel:+919876543210"
+              className="flex w-full items-center justify-center gap-3 bg-blue-600 text-white py-5 rounded-xl font-bold text-sm uppercase tracking-widest shadow-xl"
+            >
+              <Phone size={18} /> Call Now
+            </a>
+          </div>
+        </div>
+      )}
     </>
   );
 };

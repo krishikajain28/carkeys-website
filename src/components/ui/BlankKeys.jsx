@@ -1,64 +1,183 @@
-import React from "react";
-import TopBar from "../layout/TopBar";
-import Header from "../layout/Header";
-import Footer from "../layout/Footer";
-import { Download, FileText } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Download,
+  FileText,
+  ShieldCheck,
+  ArrowRight,
+  Grid3X3,
+  ArrowUp,
+} from "lucide-react";
+
+// Updated to reflect your actual inventory count
+const TOTAL_IMAGES = 10;
+
+const brands = [
+  "Honda",
+  "Toyota",
+  "Maruti Suzuki",
+  "Hyundai",
+  "Mahindra",
+  "Tata Motors",
+  "Volkswagen",
+  "Skoda",
+  "Kia",
+];
 
 const BlankKeys = () => {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      <TopBar />
-      <Header />
+  // STATE: Track if we are showing all images or just the preview
+  const [showAll, setShowAll] = useState(false);
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="mb-10 border-b border-gray-200 pb-8">
-          <h1 className="text-3xl font-black text-gray-900 mb-2">
-            Blank Keys (Raw Material)
+  // LOGIC: Show 8 initially, or all 10 if button is clicked
+  const visibleCount = showAll ? TOTAL_IMAGES : 8;
+
+  // Generates paths: /images/bk1.png ... to ... /images/bk10.png
+  const currentImages = Array.from(
+    { length: visibleCount },
+    (_, i) => `/images/bk${i + 1}.png`
+  );
+
+  return (
+    <div className="bg-slate-50 min-h-screen font-sans">
+      {/* 1. HERO HEADER */}
+      <section className="bg-slate-900 pb-20 pt-36 px-6 border-b border-slate-800">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider mb-8">
+            <ShieldCheck size={14} /> Official Wholesale Stockist
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight leading-tight">
+            Blank Keys <span className="text-blue-500">&</span> Remotes
           </h1>
-          <p className="text-gray-600 max-w-2xl">
-            We stock over 500 varieties of key shells, blades, and remotes for
-            Honda, Toyota, Maruti, Hyundai, and more.
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed font-medium">
+            The largest inventory in India. Over 500+ varieties of OEM-grade key
+            shells, blades, and smart remotes ready for immediate dispatch.
           </p>
         </div>
+      </section>
 
-        {/* Large Call To Action for PDF */}
-        <div className="bg-blue-900 rounded-2xl p-8 md:p-12 text-center text-white mb-16 shadow-xl">
-          <div className="inline-block p-4 bg-blue-800 rounded-full mb-6">
-            <FileText size={48} />
+      {/* 2. MAIN CONTENT WRAPPER */}
+      <section className="max-w-6xl mx-auto px-4 md:px-6 py-16 space-y-24">
+        {/* A. LIVE INVENTORY PREVIEW */}
+        <div>
+          <div className="flex items-center justify-between mb-10 px-2">
+            <div>
+              <h2 className="text-2xl font-black text-slate-900">
+                {showAll ? "Full Inventory" : "Latest Arrivals"}
+              </h2>
+              <p className="text-slate-500 text-sm font-bold mt-1">
+                Explore our star products
+              </p>
+            </div>
+            <Grid3X3 className="text-slate-300" size={28} />
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            View the Complete Collection
-          </h2>
-          <p className="text-blue-200 max-w-lg mx-auto mb-8 text-lg">
-            Because our inventory is so large (500+ items), we recommend
-            downloading our full visual catalog to find the exact key blade you
-            need.
-          </p>
-          <button className="inline-flex items-center gap-2 bg-yellow-400 text-blue-900 px-8 py-4 rounded-xl font-black text-xl hover:bg-yellow-300 transition-colors shadow-lg hover:shadow-yellow-400/20">
-            <Download size={24} /> Download 2025 Catalog (12MB)
+
+          {/* GRID */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {currentImages.map((img, idx) => (
+              <div
+                key={idx}
+                className="group bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden"
+              >
+                <div className="aspect-square bg-slate-100 relative flex items-center justify-center p-4">
+                  <img
+                    src={img}
+                    alt={`Product ${idx + 1}`}
+                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://placehold.co/300x300/f1f5f9/94a3b8?text=Key+Image";
+                    }}
+                  />
+                  {/* Show Green Dot only on the first 4 items as "New" */}
+                  {idx < 4 && (
+                    <div className="absolute top-3 right-3">
+                      <span className="w-2 h-2 block rounded-full bg-green-500 ring-4 ring-white"></span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4 text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    Ref: BK-{idx + 101}
+                  </p>
+                  <h3 className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors">
+                    Key Model {idx + 1}
+                  </h3>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TOGGLE BUTTON */}
+          <div className="text-center mt-12">
+            {!showAll ? (
+              <button
+                onClick={() => setShowAll(true)}
+                className="group inline-flex items-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest hover:text-blue-600 transition-colors"
+              >
+                View All Products
+                <ArrowRight
+                  size={16}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowAll(false)}
+                className="group inline-flex items-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest hover:text-red-600 transition-colors"
+              >
+                Show Less
+                <ArrowUp
+                  size={16}
+                  className="group-hover:-translate-y-1 transition-transform"
+                />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* B. CATALOG DOWNLOAD CARD */}
+        <div className="bg-blue-600 rounded-2xl p-6 md:p-12 shadow-2xl shadow-blue-900/20 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left border border-blue-500/30">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-3 justify-center md:justify-start">
+              <div className="p-2 bg-white/20 rounded-lg text-white backdrop-blur-md">
+                <FileText size={24} />
+              </div>
+              <span className="text-blue-100 font-bold uppercase tracking-widest text-xs">
+                2025 Catalog
+              </span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-black text-white mb-3">
+              Download Full Price List
+            </h2>
+            <p className="text-blue-100/90 text-sm md:text-base leading-relaxed max-w-md">
+              See the remaining 490+ items. Offline access to part numbers,
+              compatibility charts, and wholesale pricing.
+            </p>
+          </div>
+
+          <button className="whitespace-nowrap inline-flex items-center gap-3 bg-white text-blue-900 px-8 py-4 rounded-xl font-black text-xs md:text-sm uppercase tracking-wider transition-all hover:bg-blue-50 hover:scale-105 shadow-xl">
+            <Download size={20} /> Download PDF (12MB)
           </button>
         </div>
 
-        {/* Brand List (Simple Text) */}
-        <div className="text-center">
-          <h3 className="text-xl font-bold text-gray-400 uppercase tracking-widest mb-6">
-            Brands We Cover
+        {/* C. BRAND COVERAGE */}
+        <div className="text-center border-t border-slate-200 pt-16">
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-10">
+            Compatible With
           </h3>
-          <div className="flex flex-wrap justify-center gap-4 text-gray-500 font-bold">
-            <span className="bg-white px-4 py-2 rounded border">Honda</span>
-            <span className="bg-white px-4 py-2 rounded border">Toyota</span>
-            <span className="bg-white px-4 py-2 rounded border">Suzuki</span>
-            <span className="bg-white px-4 py-2 rounded border">Hyundai</span>
-            <span className="bg-white px-4 py-2 rounded border">Mahindra</span>
-            <span className="bg-white px-4 py-2 rounded border">Tata</span>
-            <span className="bg-white px-4 py-2 rounded border">
-              Volkswagen
-            </span>
+          <div className="flex flex-wrap justify-center gap-3">
+            {brands.map((brand, idx) => (
+              <span
+                key={idx}
+                className="bg-white px-5 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-bold text-xs uppercase tracking-wider shadow-sm hover:border-blue-500 hover:text-blue-600 transition-all cursor-default select-none"
+              >
+                {brand}
+              </span>
+            ))}
           </div>
         </div>
-      </main>
-
-      <Footer />
+      </section>
     </div>
   );
 };

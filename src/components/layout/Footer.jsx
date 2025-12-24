@@ -75,7 +75,7 @@ const Footer = () => {
                     size={14}
                     className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all"
                   />{" "}
-                  About Firm
+                  About Us
                 </Link>
               </li>
               <li>
@@ -150,7 +150,7 @@ const Footer = () => {
           {/* COLUMN 4: Contact Info (Vital for B2B) */}
           <div>
             <h3 className="text-white font-black text-xs uppercase tracking-[0.2em] mb-8">
-              Mumbai HQ
+              Banglore HQ
             </h3>
             <div className="space-y-6 text-sm font-medium">
               <div className="flex items-start gap-4">
