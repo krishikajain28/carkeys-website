@@ -30,7 +30,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative w-full py-32 bg-slate-900 overflow-hidden">
+    <section className="relative w-full py-28 bg-slate-900 overflow-hidden">
       {/* BACKGROUND IMAGE: Cinematic Slow Zoom Animation */}
       <div className="absolute inset-0 z-0">
         <motion.div

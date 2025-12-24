@@ -21,7 +21,8 @@ const Home = () => {
         <VideoGallery />
 
         {/* About Placeholder (Simple Text Section) */}
-        <section className="bg-gray-900 text-white py-16 px-4">
+        <section className="bg-gray-900 text-white py-8 px-4">
+          {" "}
           <div className="max-w-4xl mx-auto text-center md:text-left">
             <h2 className="text-2xl font-bold mb-4 text-yellow-400">
               About Rishabh Keys
