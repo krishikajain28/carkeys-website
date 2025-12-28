@@ -5,7 +5,7 @@ const Contact = () => {
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
       {/* 1. HERO HEADER: Clean separation, no overlap */}
-      <section className="bg-slate-900 py-24 px-6 border-b border-slate-800">
+      <section className="bg-slate-900 pt-36 pb-24 px-6 border-b border-slate-800">
         <div className="max-w-4xl mx-auto text-center">
           <span className="inline-block py-1.5 px-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider mb-8">
             24/7 Support
